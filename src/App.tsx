@@ -1,4 +1,3 @@
-// src/App.tsx
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles } from "lucide-react";
@@ -18,8 +17,7 @@ const DEBUG = true;
 function maskEmail(e: string) {
   if (!e || !e.includes("@")) return e;
   const [u, d] = e.split("@");
-  const uu =
-    u.length <= 2 ? u[0] + "*" : u[0] + "*".repeat(Math.max(1, u.length - 2)) + u[u.length - 1];
+  const uu = u.length <= 2 ? u[0] + "*" : u[0] + "*".repeat(Math.max(1, u.length - 2)) + u[u.length - 1];
   return `${uu}@${d}`;
 }
 function dbg(...args: any[]) {
@@ -32,7 +30,7 @@ const BRAND = {
   teal: "#2FB3C4",
   blue: "#0E5C8B",
   deep: "#073B5C",
-  ink: "#08141C",
+  ink:  "#08141C",
 };
 
 dbg("Brand colors:", BRAND);
@@ -51,15 +49,15 @@ export function validateEmail(email: string): boolean {
   return ok;
 }
 
-const LOGO_CANDIDATES = ["/erlysense-logo.png", "/logo.png", "/assets/erlysense-logo.png"];
+const LOGO_CANDIDATES = [
+  "/erlysense-logo.png",
+  "/logo.png",
+  "/assets/erlysense-logo.png",
+];
 
 dbg("Logo candidates:", LOGO_CANDIDATES);
 
-const INTEREST_ENDPOINT =
-  (typeof import.meta !== "undefined" &&
-    (import.meta as any).env &&
-    (import.meta as any).env.VITE_INTEREST_ENDPOINT) ||
-  "/api/interest";
+const INTEREST_ENDPOINT = (typeof import.meta !== "undefined" && (import.meta as any).env && (import.meta as any).env.VITE_INTEREST_ENDPOINT) || "/api/interest";
 dbg("Interest endpoint in use:", INTEREST_ENDPOINT);
 
 // Preferred favicon assets (original brand favicon) — simple absolute paths
@@ -73,7 +71,7 @@ const FAVICONS = [
 
 dbg("Favicons to inject:", FAVICONS);
 
-export default function App() {
+export default function ComingSoon() {
   const [email, setEmail] = React.useState("");
   const [note, setNote] = React.useState("");
   const [trap, setTrap] = React.useState("");
@@ -99,9 +97,7 @@ export default function App() {
   React.useEffect(() => {
     try {
       dbg("Favicon effect: removing existing icons…");
-      const removeNodes = document.querySelectorAll(
-        "link[rel='icon'], link[rel='shortcut icon'], link[rel='apple-touch-icon']",
-      );
+      const removeNodes = document.querySelectorAll("link[rel='icon'], link[rel='shortcut icon'], link[rel='apple-touch-icon']");
       dbg("Found", removeNodes.length, "existing icon link(s)");
       removeNodes.forEach((el) => el.parentElement?.removeChild(el));
       dbg("Injecting favicons:");
@@ -113,12 +109,7 @@ export default function App() {
         link.href = (f as any).href;
         link.crossOrigin = "anonymous";
         document.head.appendChild(link);
-        dbg("→ added", {
-          rel: link.rel,
-          href: link.href,
-          sizes: (link as any).sizes || undefined,
-          type: link.type || undefined,
-        });
+        dbg("→ added", { rel: link.rel, href: link.href, sizes: (link as any).sizes || undefined, type: link.type || undefined });
       });
       // Hint to browsers
       const metaTheme = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
@@ -139,18 +130,10 @@ export default function App() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     dbg("Form submit: start", { endpoint: INTEREST_ENDPOINT, email: maskEmail(email) });
-    if (trap) {
-      dbg("Honeypot triggered — aborting");
-      return;
-    }
-    if (!validateEmail(email)) {
-      setStatus({ ok: false, msg: "Please enter a valid email." });
-      dbg("Invalid email — user message set");
-      return;
-    }
+    if (trap) { dbg("Honeypot triggered — aborting"); return; }
+    if (!validateEmail(email)) { setStatus({ ok: false, msg: "Please enter a valid email." }); dbg("Invalid email — user message set"); return; }
     try {
-      setIsLoading(true);
-      setStatus(null);
+      setIsLoading(true); setStatus(null);
       const payload = { email, note, source: "coming-soon" };
       dbg("POST payload:", { ...payload, email: maskEmail(payload.email) });
       const res = await fetch(INTEREST_ENDPOINT, {
@@ -161,42 +144,22 @@ export default function App() {
       dbg("Response status:", res.status);
       if (!res.ok) throw new Error("Network error");
       setStatus({ ok: true, msg: "Thanks! We'll be in touch soon." });
-      setEmail("");
-      setNote("");
+      setEmail(""); setNote("");
       dbg("Form submit: success");
     } catch (err) {
       setStatus({ ok: false, msg: "Something went wrong. Please try again." });
       dbg("Form submit: error", err);
-    } finally {
-      setIsLoading(false);
-      dbg("Form submit: finished");
-    }
+    } finally { setIsLoading(false); dbg("Form submit: finished"); }
   }
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden text-white">
       {/* On-brand background: ink → deep blue with subtle glow */}
-      <div
-        className="absolute inset-0"
-        style={{ background: `linear-gradient(180deg, ${BRAND.ink} 0%, ${BRAND.deep} 100%)` }}
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `radial-gradient(50% 35% at 50% 18%, ${hexWithAlpha(BRAND.teal, 0.22)} 0%, rgba(0,0,0,0) 100%)`,
-        }}
-      />
+      <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${BRAND.ink} 0%, ${BRAND.deep} 100%)` }} />
+      <div className="absolute inset-0" style={{ background: `radial-gradient(50% 35% at 50% 18%, ${hexWithAlpha(BRAND.teal, 0.22)} 0%, rgba(0,0,0,0) 100%)` }} />
       {/* gentle sweep */}
       <div className="absolute -inset-32 opacity-35 [mask-image:radial-gradient(closest-side,black,transparent)]">
-        <div
-          className="animate-[spin_28s_linear_infinite] h-full w-full"
-          style={{
-            background: `conic-gradient(from 120deg at 50% 50%, ${hexWithAlpha(BRAND.aqua,0.16)}, ${hexWithAlpha(
-              BRAND.blue,
-              0.16,
-            )}, ${hexWithAlpha(BRAND.teal,0.16)}, ${hexWithAlpha(BRAND.aqua,0.16)})`,
-          }}
-        />
+        <div className="animate-[spin_28s_linear_infinite] h-full w-full" style={{ background: `conic-gradient(from 120deg at 50% 50%, ${hexWithAlpha(BRAND.aqua,0.16)}, ${hexWithAlpha(BRAND.blue,0.16)}, ${hexWithAlpha(BRAND.teal,0.16)}, ${hexWithAlpha(BRAND.aqua,0.16)})` }} />
       </div>
 
       {/* Content */}
@@ -210,11 +173,7 @@ export default function App() {
                 className="h-16 w-auto drop-shadow-[0_2px_16px_rgba(0,0,0,0.35)]"
                 loading="eager"
                 decoding="async"
-                onError={() => {
-                  dbg("Logo load error at index", logoIdx, LOGO_CANDIDATES[logoIdx]);
-                  if (logoIdx < LOGO_CANDIDATES.length - 1) setLogoIdx((i) => i + 1);
-                  else setLogoBroken(true);
-                }}
+                onError={() => { dbg("Logo load error at index", logoIdx, LOGO_CANDIDATES[logoIdx]); if (logoIdx < LOGO_CANDIDATES.length - 1) setLogoIdx(i => i + 1); else setLogoBroken(true); }}
                 onLoad={() => dbg("Logo loaded:", LOGO_CANDIDATES[logoIdx])}
               />
             ) : (
@@ -224,26 +183,17 @@ export default function App() {
             )}
           </motion.div>
 
-          <motion.h1
-            variants={floating}
-            className="mx-auto text-center text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl"
-          >
+          <motion.h1 variants={floating} className="mx-auto text-center text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
             <span className="mx-auto block">
               <span style={{ color: BRAND.aqua }}>erly</span>
               <span style={{ color: BRAND.blue }}>Sense</span>
             </span>
-            <span
-              className="block bg-clip-text text-transparent"
-              style={{ backgroundImage: `linear-gradient(90deg, ${BRAND.aqua}, ${BRAND.teal}, ${BRAND.blue})` }}
-            >
+            <span className="block bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(90deg, ${BRAND.aqua}, ${BRAND.teal}, ${BRAND.blue})` }}>
               coming soon
             </span>
           </motion.h1>
 
-          <motion.p
-            variants={floating}
-            className="mx-auto mt-4 max-w-xl text-center text-base leading-relaxed text-white/80 sm:text-lg"
-          >
+          <motion.p variants={floating} className="mx-auto mt-4 max-w-xl text-center text-base leading-relaxed text-white/80 sm:text-lg">
             An innovative step toward proactive student well-being. For now, just a whisper.
           </motion.p>
 
@@ -258,15 +208,11 @@ export default function App() {
               className="inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-medium"
               style={{
                 borderColor: hexWithAlpha(BRAND.aqua, 0.35),
-                backgroundColor: hexWithAlpha(BRAND.aqua, 0.1),
-                color: "#E6FAFF",
+                backgroundColor: hexWithAlpha(BRAND.aqua, 0.10),
+                color: '#E6FAFF',
               }}
             >
-              <span
-                aria-hidden
-                className="inline-block h-2 w-2 animate-pulse rounded-full"
-                style={{ backgroundColor: BRAND.teal }}
-              />
+              <span aria-hidden className="inline-block h-2 w-2 animate-pulse rounded-full" style={{ backgroundColor: BRAND.teal }} />
               <Sparkles className="h-4 w-4 opacity-80" />
               Stay curious — launch imminent
             </span>
@@ -277,17 +223,14 @@ export default function App() {
             <motion.div variants={floating} className="mx-auto mt-8 flex items-center justify-center">
               <button
                 type="button"
-                onClick={() => {
-                  setInterestOpen(true);
-                  dbg("Interested clicked");
-                }}
+                onClick={() => { setInterestOpen(true); dbg("Interested clicked"); }}
                 aria-expanded={interestOpen}
                 aria-controls="interest-form"
                 className="rounded-xl px-5 py-3 text-sm font-medium"
                 style={{
-                  border: `1px solid ${hexWithAlpha(BRAND.teal, 0.4)}`,
-                  backgroundColor: hexWithAlpha(BRAND.teal, 0.12),
-                  color: "#e9fbff",
+                  border: `1px solid ${hexWithAlpha(BRAND.teal,0.4)}`,
+                  backgroundColor: hexWithAlpha(BRAND.teal,0.12),
+                  color: '#e9fbff',
                 }}
               >
                 I’m interested
@@ -306,13 +249,8 @@ export default function App() {
                 id="interest-form"
                 className="mx-auto mt-10 w-full max-w-md"
               >
-                <form
-                  onSubmit={handleSubmit}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-sm backdrop-blur"
-                >
-                  <label htmlFor="email" className="block text-sm text-white/85">
-                    Get notified at
-                  </label>
+                <form onSubmit={handleSubmit} className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-sm backdrop-blur">
+                  <label htmlFor="email" className="block text-sm text-white/85">Get notified at</label>
                   <div className="mt-2 flex gap-2">
                     <input
                       id="email"
@@ -321,10 +259,7 @@ export default function App() {
                       value={email}
                       ref={emailRef}
                       autoComplete="email"
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        dbg("Email input changed:", maskEmail(e.target.value));
-                      }}
+                      onChange={(e) => { setEmail(e.target.value); dbg("Email input changed:", maskEmail(e.target.value)); }}
                       placeholder="you@school.edu"
                       className="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-white placeholder-white/40 outline-none focus:border-white/30"
                       aria-label="Email address"
@@ -334,17 +269,13 @@ export default function App() {
                       disabled={isLoading}
                       className="shrink-0 rounded-xl px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60"
                       style={{
-                        border: `1px solid ${hexWithAlpha(BRAND.teal, 0.4)}`,
-                        backgroundColor: hexWithAlpha(BRAND.teal, 0.12),
+                        border: `1px solid ${hexWithAlpha(BRAND.teal,0.4)}`,
+                        backgroundColor: hexWithAlpha(BRAND.teal,0.12),
                         color: `#e9fbff`,
                         boxShadow: `0 0 0 0 rgba(0,0,0,0)`,
                       }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor = hexWithAlpha(BRAND.teal, 0.16))
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor = hexWithAlpha(BRAND.teal, 0.12))
-                      }
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = hexWithAlpha(BRAND.teal,0.16))}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = hexWithAlpha(BRAND.teal,0.12))}
                     >
                       {isLoading ? "Sending…" : "Notify me"}
                     </button>
@@ -353,10 +284,7 @@ export default function App() {
                   <div className="mt-3">
                     <textarea
                       value={note}
-                      onChange={(e) => {
-                        setNote(e.target.value);
-                        dbg("Note changed (len):", e.target.value.length);
-                      }}
+                      onChange={(e) => { setNote(e.target.value); dbg("Note changed (len):", e.target.value.length); }}
                       placeholder="Optional: a line about your use case"
                       rows={2}
                       className="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-white placeholder-white/40 outline-none focus:border-white/30"
@@ -364,41 +292,20 @@ export default function App() {
                   </div>
 
                   {/* Honeypot input */}
-                  <input
-                    type="text"
-                    value={trap}
-                    onChange={(e) => {
-                      setTrap(e.target.value);
-                      dbg("Honeypot updated (len):", e.target.value.length);
-                    }}
-                    tabIndex={-1}
-                    autoComplete="off"
-                    className="hidden"
-                    aria-hidden
-                  />
+                  <input type="text" value={trap} onChange={(e) => { setTrap(e.target.value); dbg("Honeypot updated (len):", e.target.value.length); }} tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
                   {status && (
-                    <div
-                      role="status"
-                      aria-live="polite"
-                      className="mt-3 rounded-xl px-3 py-2 text-sm"
-                      style={{
-                        backgroundColor: status.ok
-                          ? hexWithAlpha("#10B981", 0.12)
-                          : hexWithAlpha("#F43F5E", 0.12),
-                        color: status.ok ? "#d1fae5" : "#ffe1e7",
-                        border: `1px solid ${
-                          status.ok ? hexWithAlpha("#10B981", 0.3) : hexWithAlpha("#F43F5E", 0.3)
-                        }`,
-                      }}
-                    >
+                    <div role="status" aria-live="polite" className="mt-3 rounded-xl px-3 py-2 text-sm" style={{
+                      backgroundColor: status.ok ? hexWithAlpha("#10B981",0.12) : hexWithAlpha("#F43F5E",0.12),
+                      color: status.ok ? "#d1fae5" : "#ffe1e7",
+                      border: `1px solid ${status.ok ? hexWithAlpha("#10B981",0.3) : hexWithAlpha("#F43F5E",0.3)}`,
+                    }}>
                       {status.msg}
                     </div>
                   )}
 
                   <p className="mt-3 text-[11px] leading-snug text-white/55">
-                    We’ll only email you about launch updates. By submitting, you agree to our
-                    privacy notice.
+                    We’ll only email you about launch updates. By submitting, you agree to our privacy notice.
                   </p>
                 </form>
               </motion.section>
@@ -411,12 +318,7 @@ export default function App() {
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.08] mix-blend-soft-light" aria-hidden>
         <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
           <filter id="n">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.8"
-              numOctaves="4"
-              stitchTiles="stitch"
-            />
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch" />
             <feColorMatrix type="saturate" values="0" />
           </filter>
           <rect width="100%" height="100%" filter="url(#n)" />
@@ -427,19 +329,9 @@ export default function App() {
       <footer className="relative z-10 mx-auto mb-6 mt-0 flex w-full max-w-5xl items-center justify-between px-6 text-xs text-white/70">
         <p>© {new Date().getFullYear()} erlySense</p>
         <nav className="flex items-center gap-3">
-          <button
-            onClick={() => setShowTerms(true)}
-            className="rounded px-1.5 py-0.5 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-white/20"
-          >
-            Terms
-          </button>
+          <button onClick={() => setShowTerms(true)} className="rounded px-1.5 py-0.5 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-white/20">Terms</button>
           <span className="opacity-40">·</span>
-          <button
-            onClick={() => setShowPrivacy(true)}
-            className="rounded px-1.5 py-0.5 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-white/20"
-          >
-            Privacy
-          </button>
+          <button onClick={() => setShowPrivacy(true)} className="rounded px-1.5 py-0.5 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-white/20">Privacy</button>
         </nav>
       </footer>
 
@@ -448,49 +340,24 @@ export default function App() {
         <SimpleModal title="Early Access Terms" onClose={() => setShowTerms(false)}>
           <LegalBlock>
             <h3>Scope & Eligibility</h3>
-            <p>
-              These Early Access Terms govern your participation in our private beta and the use of
-              any pre-release features of erlySense (the “Service”). Participation is by invitation
-              only and may be suspended or ended at any time.
-            </p>
+            <p>These Early Access Terms govern your participation in our private beta and the use of any pre-release features of erlySense (the “Service”). Participation is by invitation only and may be suspended or ended at any time.</p>
 
             <h3>Confidentiality</h3>
-            <p>
-              You agree not to disclose non-public information about the Service, including
-              performance, features, or feedback, except to your internal team with a need to know.
-              You may not publish benchmarks without prior written consent.
-            </p>
+            <p>You agree not to disclose non-public information about the Service, including performance, features, or feedback, except to your internal team with a need to know. You may not publish benchmarks without prior written consent.</p>
 
             <h3>Feedback License</h3>
-            <p>
-              If you choose to provide feedback, you grant us a worldwide, royalty-free license to
-              use it to improve the Service.
-            </p>
+            <p>If you choose to provide feedback, you grant us a worldwide, royalty-free license to use it to improve the Service.</p>
 
             <h3>Pre-Release Disclaimer</h3>
-            <p>
-              The Service is provided “as is” and may contain defects. To the fullest extent
-              permitted by law, we disclaim all warranties and limit liability to direct damages
-              capped at the fees you paid for the beta, if any.
-            </p>
+            <p>The Service is provided “as is” and may contain defects. To the fullest extent permitted by law, we disclaim all warranties and limit liability to direct damages capped at the fees you paid for the beta, if any.</p>
 
             <h3>Data & Security</h3>
-            <p>
-              We take appropriate technical and organizational measures to protect data. Do not
-              input personal data of children under 13 or any sensitive categories without a written
-              agreement with us.
-            </p>
+            <p>We take appropriate technical and organizational measures to protect data. Do not input personal data of children under 13 or any sensitive categories without a written agreement with us.</p>
 
             <h3>Termination</h3>
-            <p>
-              Either party may terminate beta access at any time. Upon termination you’ll stop using
-              the pre-release features and, where applicable, delete related materials.
-            </p>
+            <p>Either party may terminate beta access at any time. Upon termination you’ll stop using the pre-release features and, where applicable, delete related materials.</p>
 
-            <p className="text-[11px] text-white/50 mt-4">
-              Note: This is a concise beta overview for launch-phase use. For a signed agreement,
-              contact us.
-            </p>
+            <p className="text-[11px] text-white/50 mt-4">Note: This is a concise beta overview for launch-phase use. For a signed agreement, contact us.</p>
           </LegalBlock>
         </SimpleModal>
       )}
@@ -499,54 +366,27 @@ export default function App() {
         <SimpleModal title="Privacy Notice (Waitlist)" onClose={() => setShowPrivacy(false)}>
           <LegalBlock>
             <h3>What we collect</h3>
-            <p>
-              When you join the waitlist, we collect your email and any optional note you provide.
-              We also store the date/time and approximate region derived from network information.
-            </p>
+            <p>When you join the waitlist, we collect your email and any optional note you provide. We also store the date/time and approximate region derived from network information.</p>
 
             <h3>How we use it</h3>
-            <p>
-              We use your details to send launch updates and—if you opt in—beta invitations. We do
-              not sell your personal data. You can opt out at any time via the unsubscribe link in
-              our emails.
-            </p>
+            <p>We use your details to send launch updates and—if you opt in—beta invitations. We do not sell your personal data. You can opt out at any time via the unsubscribe link in our emails.</p>
 
             <h3>Legal basis</h3>
-            <p>
-              For users in the EU/UK, our processing is based on your consent for marketing updates.
-              You may withdraw consent at any time.
-            </p>
+            <p>For users in the EU/UK, our processing is based on your consent for marketing updates. You may withdraw consent at any time.</p>
 
             <h3>Retention</h3>
-            <p>
-              We retain waitlist data until general availability or until you unsubscribe—whichever
-              occurs first—unless a longer period is required by law.
-            </p>
+            <p>We retain waitlist data until general availability or until you unsubscribe—whichever occurs first—unless a longer period is required by law.</p>
 
             <h3>Your rights</h3>
-            <p>
-              Where applicable, you may request access, correction, deletion, or objection to
-              processing. Contact us using the details below.
-            </p>
+            <p>Where applicable, you may request access, correction, deletion, or objection to processing. Contact us using the details below.</p>
 
             <h3>Children</h3>
-            <p>
-              We do not knowingly collect personal information from children under 13. If you
-              believe a child provided information, contact us and we will delete it.
-            </p>
+            <p>We do not knowingly collect personal information from children under 13. If you believe a child provided information, contact us and we will delete it.</p>
 
             <h3>Contact</h3>
-            <p>
-              Questions or requests:{" "}
-              <a className="underline" href="mailto:privacy@erlysense.example">
-                privacy@erlysense.example
-              </a>
-            </p>
+            <p>Questions or requests: <a className="underline" href="mailto:privacy@erlysense.example">privacy@erlysense.example</a></p>
 
-            <p className="text-[11px] text-white/50 mt-4">
-              This notice is for the waitlist/coming-soon page only and will be replaced by a full
-              policy at GA.
-            </p>
+            <p className="text-[11px] text-white/50 mt-4">This notice is for the waitlist/coming-soon page only and will be replaced by a full policy at GA.</p>
           </LegalBlock>
         </SimpleModal>
       )}
@@ -555,76 +395,38 @@ export default function App() {
 }
 
 // ——— UI primitives for legal modals ———
-function SimpleModal({
-  title,
-  onClose,
-  children,
-}: {
-  title: string;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
+function SimpleModal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "Tab" && containerRef.current) {
-        const focusables =
-          containerRef.current.querySelectorAll<HTMLElement>(
-            'a,button,textarea,input,select,[tabindex]:not([tabindex="-1"])',
-          );
-        const arr = Array.from(focusables).filter((el) => !el.hasAttribute("disabled"));
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'Tab' && containerRef.current) {
+        const focusables = containerRef.current.querySelectorAll<HTMLElement>('a,button,textarea,input,select,[tabindex]:not([tabindex="-1"])');
+        const arr = Array.from(focusables).filter(el => !el.hasAttribute('disabled'));
         if (arr.length === 0) return;
         const first = arr[0];
         const last = arr[arr.length - 1];
         const active = document.activeElement as HTMLElement | null;
-        if (!active || !containerRef.current.contains(active)) {
-          first.focus();
-          e.preventDefault();
-          return;
-        }
-        if (!e.shiftKey && active === last) {
-          first.focus();
-          e.preventDefault();
-        }
-        if (e.shiftKey && active === first) {
-          last.focus();
-          e.preventDefault();
-        }
+        if (!active || !containerRef.current.contains(active)) { first.focus(); e.preventDefault(); return; }
+        if (!e.shiftKey && active === last) { first.focus(); e.preventDefault(); }
+        if (e.shiftKey && active === first) { last.focus(); e.preventDefault(); }
       }
     };
-    document.addEventListener("keydown", onKey);
+    document.addEventListener('keydown', onKey);
     requestAnimationFrame(() => {
-      const target = containerRef.current?.querySelector<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-      );
+      const target = containerRef.current?.querySelector<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
       target?.focus();
     });
-    return () => document.removeEventListener("keydown", onKey);
+    return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
-    >
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div
-        ref={containerRef}
-        className="relative z-10 m-4 w-full max-w-2xl overflow-hidden rounded-2xl border border-white/10 bg-[#0b1620]/95 p-0 shadow-xl backdrop-blur"
-      >
+      <div ref={containerRef} className="relative z-10 m-4 w-full max-w-2xl overflow-hidden rounded-2xl border border-white/10 bg-[#0b1620]/95 p-0 shadow-xl backdrop-blur">
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-          <h2 id="modal-title" className="text-sm font-semibold">
-            {title}
-          </h2>
-          <button
-            onClick={onClose}
-            className="rounded px-2 py-1 text-white/70 hover:text-white/90 focus:outline-none focus:ring-2 focus:ring-white/20"
-          >
-            Close
-          </button>
+          <h2 id="modal-title" className="text-sm font-semibold">{title}</h2>
+          <button onClick={onClose} className="rounded px-2 py-1 text-white/70 hover:text-white/90 focus:outline-none focus:ring-2 focus:ring-white/20">Close</button>
         </div>
         <div className="max-h-[70vh] overflow-y-auto p-4 text-[13px] leading-relaxed text-white/90">
           {children}
@@ -664,11 +466,8 @@ function hexWithAlpha(hex: string, alpha: number) {
   // Clamp
   const a = Math.max(0, Math.min(1, alpha));
   // Convert hex to RGB
-  const h = hex.replace("#", "");
-  const bigint = parseInt(
-    h.length === 3 ? h.split("").map((ch) => ch + ch).join("") : h,
-    16,
-  ); // ensure closing parenthesis
+  const h = hex.replace('#','');
+  const bigint = parseInt(h.length === 3 ? h.split('').map(ch => ch + ch).join('') : h, 16); // ensure closing parenthesis
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
@@ -676,32 +475,16 @@ function hexWithAlpha(hex: string, alpha: number) {
 }
 
 // ---- Tiny dev-only tests (run in dev builds only) ----
-if (
-  typeof import.meta !== "undefined" &&
-  (import.meta as any).env &&
-  (import.meta as any).env.DEV
-) {
+if (typeof import.meta !== "undefined" && (import.meta as any).env && (import.meta as any).env.DEV) {
   // validateEmail tests
   console.assert(validateEmail("a@b.co") === true, "validateEmail: simple valid email failed");
-  console.assert(
-    validateEmail("user+tag@domain.edu") === true,
-    "validateEmail: plus-tag valid email failed",
-  );
+  console.assert(validateEmail("user+tag@domain.edu") === true, "validateEmail: plus-tag valid email failed");
   console.assert(validateEmail("no-at") === false, "validateEmail: missing @ should be false");
-  console.assert(
-    validateEmail("bad@domain") === false,
-    "validateEmail: missing TLD should be false",
-  );
+  console.assert(validateEmail("bad@domain") === false, "validateEmail: missing TLD should be false");
 
   // hexWithAlpha tests
-  console.assert(
-    hexWithAlpha("#000000", 1) === "rgba(0, 0, 0, 1)",
-    "hexWithAlpha: black full alpha",
-  );
-  console.assert(
-    hexWithAlpha("#FFF", 0.5) === "rgba(255, 255, 255, 0.5)",
-    "hexWithAlpha: 3-digit expansion",
-  );
+  console.assert(hexWithAlpha("#000000", 1) === "rgba(0, 0, 0, 1)", "hexWithAlpha: black full alpha");
+  console.assert(hexWithAlpha("#FFF", 0.5) === "rgba(255, 255, 255, 0.5)", "hexWithAlpha: 3-digit expansion");
   console.assert(hexWithAlpha("#123456", -1).endsWith(", 0)"), "hexWithAlpha: clamps low alpha to 0");
   console.assert(hexWithAlpha("#123456", 2).endsWith(", 1)"), "hexWithAlpha: clamps high alpha to 1");
 }
