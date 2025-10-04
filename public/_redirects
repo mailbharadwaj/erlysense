@@ -1,0 +1,9 @@
+# force HTTPS (safety, though Always Use HTTPS is also on)
+http://* https://:splat 301
+
+# canonicalize everything to www.erlysense.ai
+https://erlysense.ai/*        https://www.erlysense.ai/:splat 301
+https://*.erlysense.com/*     https://www.erlysense.ai/:splat 301
+https://erlysense.com/*       https://www.erlysense.ai/:splat 301
+https://*.erlysense.in/*      https://www.erlysense.ai/:splat 301
+https://erlysense.in/*        https://www.erlysense.ai/:splat 301
