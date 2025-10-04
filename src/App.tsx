@@ -384,7 +384,7 @@ export default function ComingSoon() {
             <p>We do not knowingly collect personal information from children under 13. If you believe a child provided information, contact us and we will delete it.</p>
 
             <h3>Contact</h3>
-            <p>Questions or requests: <a className="underline" href="mailto:privacy@erlysense.example">privacy@erlysense.example</a></p>
+            <p>Questions or requests: <a className="underline" href="mailto:privacy@erlysense.com">privacy@erlysense.com</a></p>
 
             <p className="text-[11px] text-white/50 mt-4">This notice is for the waitlist/coming‑soon page only and will be replaced by a full policy at GA.</p>
           </LegalBlock>
