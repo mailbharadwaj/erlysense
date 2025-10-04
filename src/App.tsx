@@ -3,16 +3,15 @@ import { motion, AnimatePresence, cubicBezier } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
 /**
- * erlySense — Coming Soon + Register Interest (ON‑BRAND, AUTOFOCUS, A11Y)
- * ----------------------------------------------------------------------
- * - Autofocus email when the interest form opens
- * - Animated form reveal (AnimatePresence)
- * - Accessible Terms & Privacy modals with basic focus trap
- * - Simple favicon injection with cache‑busting (no BASE_URL complexity)
- * - Dev-only tests for helpers (no runtime impact)
+ * erlySense — Coming Soon (on-brand, accessible, subtle motion)
+ * - Interest form opens only when "I'm interested" is clicked
+ * - Autofocuses email input when opened
+ * - Terms & Privacy modals with simple focus trap
+ * - Tailwind-powered layout (make sure Tailwind is enabled)
+ * - Extra curiosity: rotating headline word, pill rotation, shimmer, tab ping, Konami founder code
  */
 
-// ---- Debug helpers (logs only; no behavioral changes) ----
+// ---- Debug helpers ----
 const DEBUG = true;
 function maskEmail(e: string) {
   if (!e || !e.includes("@")) return e;
@@ -32,7 +31,6 @@ const BRAND = {
   deep: "#073B5C",
   ink:  "#08141C",
 };
-
 dbg("Brand colors:", BRAND);
 
 // ---- Animation presets ----
@@ -54,24 +52,36 @@ const LOGO_CANDIDATES = [
   "/logo.png",
   "/assets/erlysense-logo.png",
 ];
-
 dbg("Logo candidates:", LOGO_CANDIDATES);
 
-const INTEREST_ENDPOINT = (typeof import.meta !== "undefined" && (import.meta as any).env && (import.meta as any).env.VITE_INTEREST_ENDPOINT) || "/api/interest";
+const INTEREST_ENDPOINT =
+  (typeof import.meta !== "undefined" &&
+    (import.meta as any).env &&
+    (import.meta as any).env.VITE_INTEREST_ENDPOINT) ||
+  "/api/interest";
 dbg("Interest endpoint in use:", INTEREST_ENDPOINT);
 
-// Preferred favicon assets (original brand favicon) — simple absolute paths
-const VER = `v=${Date.now()}`; // cache-buster added to favicon URLs
+// Preferred favicon assets (original brand favicon)
+const VER = `v=${Date.now()}`; // cache-buster for favicons
 const FAVICONS = [
   { rel: "icon", href: `/favicon.ico?${VER}`, type: "image/x-icon" },
   { rel: "icon", href: `/favicon-512.png?${VER}`, type: "image/png", sizes: "512x512" },
   { rel: "shortcut icon", href: `/favicon.ico?${VER}`, type: "image/x-icon" },
   { rel: "apple-touch-icon", href: `/favicon-512.png?${VER}`, sizes: "180x180" },
 ];
-
 dbg("Favicons to inject:", FAVICONS);
 
-export default function ComingSoon() {
+// Curiosity: headline rotating word
+const VOICES = ["sooner", "quietly", "privately", "softly", "steadily", "imminently"];
+
+// Curiosity: rotating teaser pills
+const PILL_SETS = [
+  ["Private Beta", "Edge-first", "Privacy by design"],
+  ["Founders only", "On-device AI", "Noise-resilient"],
+  ["University-ready", "Low latency", "Launch-imminent"],
+];
+
+export default function App() {
   const [email, setEmail] = React.useState("");
   const [note, setNote] = React.useState("");
   const [trap, setTrap] = React.useState("");
@@ -84,16 +94,64 @@ export default function ComingSoon() {
   const [showPrivacy, setShowPrivacy] = React.useState(false);
   const emailRef = React.useRef<HTMLInputElement | null>(null);
 
-  dbg("Component mount: ComingSoon");
+  // Curiosity: rotating words in headline
+  const [voiceIdx, setVoiceIdx] = React.useState(0);
+  React.useEffect(() => {
+    const id = setInterval(() => setVoiceIdx(i => (i + 1) % VOICES.length), 3000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Curiosity: rotate pills set
+  const [pillSet, setPillSet] = React.useState(0);
+  React.useEffect(() => {
+    const id = setInterval(() => setPillSet(p => (p + 1) % PILL_SETS.length), 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Curiosity: Konami founder code reveal
+  const [founderMode, setFounderMode] = React.useState(false);
+  const [founderCode, setFounderCode] = React.useState("");
+  React.useEffect(() => {
+    const seq = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];
+    let idx = 0;
+    const onKey = (e: KeyboardEvent) => {
+      idx = (e.key === seq[idx] ? idx + 1 : (e.key === seq[0] ? 1 : 0));
+      if (idx === seq.length) { setFounderMode(true); dbg("Founder mode unlocked"); idx = 0; }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Curiosity: tab attention ping (title + favicon)
+  React.useEffect(() => {
+    const orig = document.title || "erlySense";
+    let swapped = false;
+    const onVis = () => {
+      if (document.hidden) {
+        document.title = "psst… something new | erlySense";
+        const l = document.querySelector(`link[rel="icon"]`) as HTMLLinkElement | null;
+        if (l) { (l as any).dataset.prev = l.href; l.href = `/favicon-512.png?ping=${Date.now()}`; swapped = true; }
+      } else {
+        document.title = orig;
+        const l = document.querySelector(`link[rel="icon"]`) as HTMLLinkElement | null;
+        if (l && swapped && (l as any).dataset.prev) l.href = (l as any).dataset.prev!;
+        swapped = false;
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, []);
+
+  dbg("Component mount: App");
 
   // Autofocus the email field when the interest form opens
   React.useEffect(() => {
     if (interestOpen && emailRef.current) {
-      requestAnimationFrame(() => emailRef.current && emailRef.current!.focus());
+      requestAnimationFrame(() => emailRef.current && emailRef.current.focus());
     }
   }, [interestOpen]);
 
-  // Ensure the original (brand) favicon is used instead of any default one
+  // Ensure the original (brand) favicon is used
   React.useEffect(() => {
     try {
       dbg("Favicon effect: removing existing icons…");
@@ -111,7 +169,6 @@ export default function ComingSoon() {
         document.head.appendChild(link);
         dbg("→ added", { rel: link.rel, href: link.href, sizes: (link as any).sizes || undefined, type: link.type || undefined });
       });
-      // Hint to browsers
       const metaTheme = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
       if (!metaTheme) {
         const m = document.createElement("meta");
@@ -134,7 +191,9 @@ export default function ComingSoon() {
     if (!validateEmail(email)) { setStatus({ ok: false, msg: "Please enter a valid email." }); dbg("Invalid email — user message set"); return; }
     try {
       setIsLoading(true); setStatus(null);
-      const payload = { email, note, source: "coming-soon" };
+      const payload: any = { email, note, source: "coming-soon" };
+      // If you want to include any founder code in the payload, uncomment next line:
+      // if (founderMode && founderCode) payload.founderCode = founderCode;
       dbg("POST payload:", { ...payload, email: maskEmail(payload.email) });
       const res = await fetch(INTEREST_ENDPOINT, {
         method: "POST",
@@ -154,7 +213,7 @@ export default function ComingSoon() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden text-white">
-      {/* On‑brand background: ink → deep blue with subtle glow */}
+      {/* On-brand background */}
       <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${BRAND.ink} 0%, ${BRAND.deep} 100%)` }} />
       <div className="absolute inset-0" style={{ background: `radial-gradient(50% 35% at 50% 18%, ${hexWithAlpha(BRAND.teal, 0.22)} 0%, rgba(0,0,0,0) 100%)` }} />
       {/* gentle sweep */}
@@ -188,26 +247,43 @@ export default function ComingSoon() {
               <span style={{ color: BRAND.aqua }}>erly</span>
               <span style={{ color: BRAND.blue }}>Sense</span>
             </span>
-            <span className="block bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(90deg, ${BRAND.aqua}, ${BRAND.teal}, ${BRAND.blue})` }}>
-              coming soon
+
+            {/* FIXED: gradient on “coming”, solid color for rotating word */}
+            <span className="relative inline-block">
+              <span
+                className="bg-clip-text text-transparent"
+                style={{ backgroundImage: `linear-gradient(90deg, ${BRAND.aqua}, ${BRAND.teal}, ${BRAND.blue})` }}
+              >
+                coming
+              </span>{" "}
+              <span
+                className="inline-block align-baseline slide-fade"
+                style={{
+                  color: "#E6FAFF",
+                  WebkitTextFillColor: "#E6FAFF",
+                  textShadow: "0 1px 2px rgba(0,0,0,0.35)",
+                }}
+              >
+                {VOICES[voiceIdx]}
+              </span>
             </span>
           </motion.h1>
 
           <motion.p variants={floating} className="mx-auto mt-4 max-w-xl text-center text-base leading-relaxed text-white/80 sm:text-lg">
-            An innovative step toward proactive student well‑being. For now, just a whisper.
+            An innovative step toward proactive student well-being. For now, just a whisper.
           </motion.p>
 
           <motion.div variants={floating} className="mx-auto mt-8 flex items-center justify-center gap-3">
-            <TeaserPill label="Private Beta" color={BRAND.teal} />
-            <TeaserPill label="Edge‑first" color={BRAND.aqua} />
-            <TeaserPill label="Privacy by design" color={BRAND.blue} />
+            {PILL_SETS[pillSet].map((label, i) => (
+              <TeaserPill key={label} label={label} color={[BRAND.teal, BRAND.aqua, BRAND.blue][i % 3]} />
+            ))}
           </motion.div>
 
           <motion.div variants={floating} className="mx-auto mt-6 flex items-center justify-center">
             <span
-              className="inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-medium"
+              className="inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-medium pill-shimmer"
               style={{
-                borderColor: hexWithAlpha(BRAND.aqua, 0.35),
+                border: `1px solid ${hexWithAlpha(BRAND.aqua, 0.35)}`,
                 backgroundColor: hexWithAlpha(BRAND.aqua, 0.10),
                 color: '#E6FAFF',
               }}
@@ -250,7 +326,7 @@ export default function ComingSoon() {
                 className="mx-auto mt-10 w-full max-w-md"
               >
                 <form onSubmit={handleSubmit} className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-sm backdrop-blur">
-                  <label htmlFor="email" className="block text-sm text-white/85">Get notified at</label>
+                  <label htmlFor="email" className="block text-sm text-white/80">Get notified at</label>
                   <div className="mt-2 flex gap-2">
                     <input
                       id="email"
@@ -294,17 +370,40 @@ export default function ComingSoon() {
                   {/* Honeypot input */}
                   <input type="text" value={trap} onChange={(e) => { setTrap(e.target.value); dbg("Honeypot updated (len):", e.target.value.length); }} tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
+                  {/* Founder code (Konami) */}
+                  {founderMode && (
+                    <div className="mt-3">
+                      <label className="block text-xs text-white/70">Founder code</label>
+                      <input
+                        value={founderCode}
+                        onChange={(e) => setFounderCode(e.target.value)}
+                        placeholder="hint: launch-imminent"
+                        className="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-white placeholder-white/40 outline-none focus:border-white/30"
+                      />
+                      {founderCode.trim().toLowerCase() === "launch-imminent" && (
+                        <div className="mt-2 text-[12px] rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-white/80">
+                          Nice catch. We’ll reach out with early access ✉️
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {status && (
-                    <div role="status" aria-live="polite" className="mt-3 rounded-xl px-3 py-2 text-sm" style={{
-                      backgroundColor: status.ok ? hexWithAlpha("#10B981",0.12) : hexWithAlpha("#F43F5E",0.12),
-                      color: status.ok ? "#d1fae5" : "#ffe1e7",
-                      border: `1px solid ${status.ok ? hexWithAlpha("#10B981",0.3) : hexWithAlpha("#F43F5E",0.3)}`,
-                    }}>
+                    <div
+                      role="status"
+                      aria-live="polite"
+                      className="mt-3 rounded-xl px-3 py-2 text-sm"
+                      style={{
+                        backgroundColor: status.ok ? hexWithAlpha("#10B981",0.12) : hexWithAlpha("#F43F5E",0.12),
+                        color: status.ok ? "#d1fae5" : "#ffe1e7",
+                        border: `1px solid ${status.ok ? hexWithAlpha("#10B981",0.3) : hexWithAlpha("#F43F5E",0.3)}`,
+                      }}
+                    >
                       {status.msg}
                     </div>
                   )}
 
-                  <p className="mt-3 text-[11px] leading-snug text-white/55">
+                  <p className="mt-3 text-[11px] leading-snug text-white/50">
                     We’ll only email you about launch updates. By submitting, you agree to our privacy notice.
                   </p>
                 </form>
@@ -314,7 +413,7 @@ export default function ComingSoon() {
         </motion.div>
       </main>
 
-      {/* fine grain */}
+      {/* fine grain noise */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.08] mix-blend-soft-light" aria-hidden>
         <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
           <filter id="n">
@@ -340,24 +439,24 @@ export default function ComingSoon() {
         <SimpleModal title="Early Access Terms" onClose={() => setShowTerms(false)}>
           <LegalBlock>
             <h3>Scope & Eligibility</h3>
-            <p>These Early Access Terms govern your participation in our private beta and the use of any pre‑release features of erlySense (the “Service”). Participation is by invitation only and may be suspended or ended at any time.</p>
+            <p>These Early Access Terms govern your participation in our private beta and the use of any pre-release features of erlySense (the “Service”). Participation is by invitation only and may be suspended or ended at any time.</p>
 
             <h3>Confidentiality</h3>
-            <p>You agree not to disclose non‑public information about the Service, including performance, features, or feedback, except to your internal team with a need to know. You may not publish benchmarks without prior written consent.</p>
+            <p>You agree not to disclose non-public information about the Service, including performance, features, or feedback, except to your internal team with a need to know. You may not publish benchmarks without prior written consent.</p>
 
             <h3>Feedback License</h3>
-            <p>If you choose to provide feedback, you grant us a worldwide, royalty‑free license to use it to improve the Service.</p>
+            <p>If you choose to provide feedback, you grant us a worldwide, royalty-free license to use it to improve the Service.</p>
 
-            <h3>Pre‑Release Disclaimer</h3>
+            <h3>Pre-Release Disclaimer</h3>
             <p>The Service is provided “as is” and may contain defects. To the fullest extent permitted by law, we disclaim all warranties and limit liability to direct damages capped at the fees you paid for the beta, if any.</p>
 
             <h3>Data & Security</h3>
             <p>We take appropriate technical and organizational measures to protect data. Do not input personal data of children under 13 or any sensitive categories without a written agreement with us.</p>
 
             <h3>Termination</h3>
-            <p>Either party may terminate beta access at any time. Upon termination you’ll stop using the pre‑release features and, where applicable, delete related materials.</p>
+            <p>Either party may terminate beta access at any time. Upon termination you’ll stop using the pre-release features and, where applicable, delete related materials.</p>
 
-            <p className="text-[11px] text-white/50 mt-4">Note: This is a concise beta overview for launch‑phase use. For a signed agreement, contact us.</p>
+            <p className="text-[11px] text-white/50 mt-4">Note: This is a concise beta overview for launch-phase use. For a signed agreement, contact us.</p>
           </LegalBlock>
         </SimpleModal>
       )}
@@ -386,7 +485,7 @@ export default function ComingSoon() {
             <h3>Contact</h3>
             <p>Questions or requests: <a className="underline" href="mailto:privacy@erlysense.com">privacy@erlysense.com</a></p>
 
-            <p className="text-[11px] text-white/50 mt-4">This notice is for the waitlist/coming‑soon page only and will be replaced by a full policy at GA.</p>
+            <p className="text-[11px] text-white/50 mt-4">This notice is for the waitlist/coming-soon page only and will be replaced by a full policy at GA.</p>
           </LegalBlock>
         </SimpleModal>
       )}
@@ -463,26 +562,21 @@ function TeaserPill({ label, color }: { label: string; color: string }) {
 
 // Utility to add alpha to a hex color
 function hexWithAlpha(hex: string, alpha: number) {
-  // Clamp
   const a = Math.max(0, Math.min(1, alpha));
-  // Convert hex to RGB
   const h = hex.replace('#','');
-  const bigint = parseInt(h.length === 3 ? h.split('').map(ch => ch + ch).join('') : h, 16); // ensure closing parenthesis
+  const bigint = parseInt(h.length === 3 ? h.split('').map(ch => ch + ch).join('') : h, 16);
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
-// ---- Tiny dev-only tests (run in dev builds only) ----
+// ---- Tiny dev-only tests ----
 if (typeof import.meta !== "undefined" && (import.meta as any).env && (import.meta as any).env.DEV) {
-  // validateEmail tests
   console.assert(validateEmail("a@b.co") === true, "validateEmail: simple valid email failed");
   console.assert(validateEmail("user+tag@domain.edu") === true, "validateEmail: plus-tag valid email failed");
   console.assert(validateEmail("no-at") === false, "validateEmail: missing @ should be false");
   console.assert(validateEmail("bad@domain") === false, "validateEmail: missing TLD should be false");
-
-  // hexWithAlpha tests
   console.assert(hexWithAlpha("#000000", 1) === "rgba(0, 0, 0, 1)", "hexWithAlpha: black full alpha");
   console.assert(hexWithAlpha("#FFF", 0.5) === "rgba(255, 255, 255, 0.5)", "hexWithAlpha: 3-digit expansion");
   console.assert(hexWithAlpha("#123456", -1).endsWith(", 0)"), "hexWithAlpha: clamps low alpha to 0");

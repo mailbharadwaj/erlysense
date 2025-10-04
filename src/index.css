@@ -8,9 +8,7 @@ html, body, #root {
   height: 100%;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -18,7 +16,6 @@ body {
     Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* App paints its own gradient, so keep a neutral bg */
   background: #08141C; /* erlySense ink */
   color: #ffffff;
 }
@@ -34,21 +31,29 @@ body {
 }
 
 /* Typography polish for legal modals (uses @tailwindcss/typography) */
-.prose h3 {
-  margin-top: 1rem;
-  margin-bottom: 0.35rem;
-  font-size: 0.95rem;
-}
-.prose p {
-  margin: 0.4rem 0;
-}
-.prose a {
-  color: #a6e8ff;
-  text-underline-offset: 2px;
+.prose h3 { margin-top: 1rem; margin-bottom: 0.35rem; font-size: 0.95rem; }
+.prose p { margin: 0.4rem 0; }
+.prose a { color: #a6e8ff; text-underline-offset: 2px; }
+
+/* Backdrop blur helper (Safari) */
+.backdrop-blur { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+
+/* ---------- Creative touches ---------- */
+
+/* Word swap animation in sub-headline */
+.slide-fade { animation: slide-fade-in .5s ease both; }
+@keyframes slide-fade-in {
+  from { transform: translateY(6px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
 }
 
-/* Utility helpers used by the design when Tailwind isn't present in some contexts */
-.backdrop-blur {
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+/* Shimmer on status pill (on hover) */
+.pill-shimmer { position: relative; overflow: hidden; }
+.pill-shimmer::after {
+  content: ""; position: absolute; inset: -40% -20%;
+  transform: translateX(-120%);
+  background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,.25) 50%, transparent 80%);
+  animation: none; pointer-events: none;
 }
+.pill-shimmer:hover::after { animation: sheen 1.4s ease; }
+@keyframes sheen { to { transform: translateX(120%); } }
