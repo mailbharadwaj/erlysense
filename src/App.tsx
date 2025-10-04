@@ -1,14 +1,14 @@
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, cubicBezier } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
 /**
- * erlySense — Coming Soon + Register Interest (ON-BRAND, AUTOFOCUS, A11Y)
+ * erlySense — Coming Soon + Register Interest (ON‑BRAND, AUTOFOCUS, A11Y)
  * ----------------------------------------------------------------------
  * - Autofocus email when the interest form opens
  * - Animated form reveal (AnimatePresence)
  * - Accessible Terms & Privacy modals with basic focus trap
- * - Simple favicon injection with cache-busting (no BASE_URL complexity)
+ * - Simple favicon injection with cache‑busting (no BASE_URL complexity)
  * - Dev-only tests for helpers (no runtime impact)
  */
 
@@ -38,7 +38,7 @@ dbg("Brand colors:", BRAND);
 // ---- Animation presets ----
 const floating = {
   hidden: { opacity: 0, y: 12, scale: 0.98 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: cubicBezier(0.22, 1, 0.36, 1) } },
 };
 const stagger = { show: { transition: { staggerChildren: 0.08 } } };
 
@@ -154,7 +154,7 @@ export default function ComingSoon() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden text-white">
-      {/* On-brand background: ink → deep blue with subtle glow */}
+      {/* On‑brand background: ink → deep blue with subtle glow */}
       <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${BRAND.ink} 0%, ${BRAND.deep} 100%)` }} />
       <div className="absolute inset-0" style={{ background: `radial-gradient(50% 35% at 50% 18%, ${hexWithAlpha(BRAND.teal, 0.22)} 0%, rgba(0,0,0,0) 100%)` }} />
       {/* gentle sweep */}
@@ -194,12 +194,12 @@ export default function ComingSoon() {
           </motion.h1>
 
           <motion.p variants={floating} className="mx-auto mt-4 max-w-xl text-center text-base leading-relaxed text-white/80 sm:text-lg">
-            An innovative step toward proactive student well-being. For now, just a whisper.
+            An innovative step toward proactive student well‑being. For now, just a whisper.
           </motion.p>
 
           <motion.div variants={floating} className="mx-auto mt-8 flex items-center justify-center gap-3">
             <TeaserPill label="Private Beta" color={BRAND.teal} />
-            <TeaserPill label="Edge-first" color={BRAND.aqua} />
+            <TeaserPill label="Edge‑first" color={BRAND.aqua} />
             <TeaserPill label="Privacy by design" color={BRAND.blue} />
           </motion.div>
 
@@ -245,7 +245,7 @@ export default function ComingSoon() {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.35, ease: cubicBezier(0.22, 1, 0.36, 1) }}
                 id="interest-form"
                 className="mx-auto mt-10 w-full max-w-md"
               >
@@ -340,24 +340,24 @@ export default function ComingSoon() {
         <SimpleModal title="Early Access Terms" onClose={() => setShowTerms(false)}>
           <LegalBlock>
             <h3>Scope & Eligibility</h3>
-            <p>These Early Access Terms govern your participation in our private beta and the use of any pre-release features of erlySense (the “Service”). Participation is by invitation only and may be suspended or ended at any time.</p>
+            <p>These Early Access Terms govern your participation in our private beta and the use of any pre‑release features of erlySense (the “Service”). Participation is by invitation only and may be suspended or ended at any time.</p>
 
             <h3>Confidentiality</h3>
-            <p>You agree not to disclose non-public information about the Service, including performance, features, or feedback, except to your internal team with a need to know. You may not publish benchmarks without prior written consent.</p>
+            <p>You agree not to disclose non‑public information about the Service, including performance, features, or feedback, except to your internal team with a need to know. You may not publish benchmarks without prior written consent.</p>
 
             <h3>Feedback License</h3>
-            <p>If you choose to provide feedback, you grant us a worldwide, royalty-free license to use it to improve the Service.</p>
+            <p>If you choose to provide feedback, you grant us a worldwide, royalty‑free license to use it to improve the Service.</p>
 
-            <h3>Pre-Release Disclaimer</h3>
+            <h3>Pre‑Release Disclaimer</h3>
             <p>The Service is provided “as is” and may contain defects. To the fullest extent permitted by law, we disclaim all warranties and limit liability to direct damages capped at the fees you paid for the beta, if any.</p>
 
             <h3>Data & Security</h3>
             <p>We take appropriate technical and organizational measures to protect data. Do not input personal data of children under 13 or any sensitive categories without a written agreement with us.</p>
 
             <h3>Termination</h3>
-            <p>Either party may terminate beta access at any time. Upon termination you’ll stop using the pre-release features and, where applicable, delete related materials.</p>
+            <p>Either party may terminate beta access at any time. Upon termination you’ll stop using the pre‑release features and, where applicable, delete related materials.</p>
 
-            <p className="text-[11px] text-white/50 mt-4">Note: This is a concise beta overview for launch-phase use. For a signed agreement, contact us.</p>
+            <p className="text-[11px] text-white/50 mt-4">Note: This is a concise beta overview for launch‑phase use. For a signed agreement, contact us.</p>
           </LegalBlock>
         </SimpleModal>
       )}
@@ -386,7 +386,7 @@ export default function ComingSoon() {
             <h3>Contact</h3>
             <p>Questions or requests: <a className="underline" href="mailto:privacy@erlysense.example">privacy@erlysense.example</a></p>
 
-            <p className="text-[11px] text-white/50 mt-4">This notice is for the waitlist/coming-soon page only and will be replaced by a full policy at GA.</p>
+            <p className="text-[11px] text-white/50 mt-4">This notice is for the waitlist/coming‑soon page only and will be replaced by a full policy at GA.</p>
           </LegalBlock>
         </SimpleModal>
       )}
