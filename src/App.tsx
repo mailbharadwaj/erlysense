@@ -3,12 +3,12 @@ import { motion, AnimatePresence, cubicBezier } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
 /**
- * erlySense — Coming Soon (on-brand, accessible, subtle motion)
+ * erlySense — Anticipated (on-brand, accessible, subtle motion)
  * - Interest form opens only when "I'm interested" is clicked
  * - Autofocuses email input when opened
  * - Terms & Privacy modals with simple focus trap
- * - Tailwind-powered layout (make sure Tailwind is enabled)
- * - Extra curiosity: rotating headline word, pill rotation, shimmer, tab ping, Konami founder code
+ * - Tailwind-powered layout
+ * - Curiosity: rotating headline word, pill rotation, shimmer, tab ping, Konami founder code
  */
 
 // ---- Debug helpers ----
@@ -242,19 +242,19 @@ export default function App() {
             )}
           </motion.div>
 
+          {/* Headline: Anticipated + visible rotating word */}
           <motion.h1 variants={floating} className="mx-auto text-center text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
             <span className="mx-auto block">
               <span style={{ color: BRAND.aqua }}>erly</span>
               <span style={{ color: BRAND.blue }}>Sense</span>
             </span>
 
-            {/* FIXED: gradient on “coming”, solid color for rotating word */}
             <span className="relative inline-block">
               <span
                 className="bg-clip-text text-transparent"
                 style={{ backgroundImage: `linear-gradient(90deg, ${BRAND.aqua}, ${BRAND.teal}, ${BRAND.blue})` }}
               >
-                coming
+                Anticipated
               </span>{" "}
               <span
                 className="inline-block align-baseline slide-fade"
